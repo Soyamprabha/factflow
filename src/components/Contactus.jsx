@@ -6,7 +6,7 @@ export default function ContactUs() {
         <div className="row">
           <div className="col-md-12">
             <div className="section-header text-center pb-5">
-              <h1 style={{ color: "#D72323" }}>Contact Us</h1>
+              <h1 style={{ color: "#3E7C17" }}>Contact Us</h1>
               <p style={{ fontSize: "20px" }}>
                 Contact us for any further queries or suggestions.
               </p>
@@ -50,7 +50,7 @@ export default function ContactUs() {
                 <button
                   className="btn btn-lg btn-block mt-3"
                   type="button"
-                  style={{ backgroundColor: "#D72323" }}
+                  style={{ backgroundColor: "#3E7C17" }}
                 >
                   Send Now
                 </button>

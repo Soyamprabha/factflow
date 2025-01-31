@@ -68,6 +68,23 @@ export default function Upload() {
         <button className="select-image" style={{ marginTop: "1rem" }}>
           Submit
         </button>
+        <div
+          className="position-absolute"
+          style={{
+            left: "50px",
+            bottom: "50px",
+            width: "400px",
+            height: "300px",
+          }}
+        >
+          {" "}
+          {/* Adjust position, size, and padding as needed */}
+          <img
+            src="https://i.imghippo.com/files/ALR7050iTM.png"
+            alt="Illustration"
+            style={{ maxWidth: "100%", height: "auto" }}
+          />
+        </div>
       </div>
     </div>
   );

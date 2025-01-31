@@ -8,7 +8,7 @@ export default function Content() {
             <div className="col-lg-6 col-md-12 col-12">
               <div className="about-img">
                 <img
-                  src="https://static.scientificamerican.com/sciam/cache/file/EA1866A2-B99D-4CB2-B3B89A15768CC312_source.jpg?w=1200"
+                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZrfbPzAb_sJs7kSJKPdH85ys5YhikFRzghw&s"
                   alt=""
                   className="img-fluid rounded"
                   style={{ width: "100%", height: "auto" }}
@@ -17,7 +17,7 @@ export default function Content() {
             </div>
             <div className="col-lg-6 col-md-12 col-12 ps-lg-5 mt-md-5">
               <div className="about-text">
-                <h2 style={{ color: "#D72323" }}>What do we do?</h2>
+                <h2 style={{ color: "#3E7C17" }}>What do we do?</h2>
                 <p>
                   Our project tackles the pervasive issue of online
                   misinformation by providing an automated, real-time detection
