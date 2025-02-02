@@ -1,16 +1,59 @@
 import "../styles/Upload.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Back from "../components/Back";
+
+const BASE_URL = process.env.BASE_URL;
 
 export default function Upload() {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imgSrc, setImgSrc] = useState(null);
+  const [link, setLink] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setUploadedImage(file);
       setImgSrc(URL.createObjectURL(file));
+    }
+  };
+
+  const handleLinkChange = (event) => {
+    setLink(event.target.value);
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    try {
+      let response;
+      if (uploadedImage) {
+        const formData = new FormData();
+        formData.append("image", uploadedImage);
+
+        response = await axios.post(`${BASE_URL}/image`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+      } else if (link.trim() !== "") {
+        response = await axios.post(`${BASE_URL}/link`, { link });
+      } else {
+        alert("Please select an image or enter a link.");
+        return;
+      }
+      console.log("Submission response:", response.data);
+      if (response.data) {
+        navigate("/display", { state: { result: response.data } }); // Navigate to Display with data
+      }
+    } catch (error) {
+      console.error("Error during submission:", error);
+      alert("There was an error submitting your data.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,7 +76,7 @@ export default function Upload() {
           style={{ cursor: "pointer" }}
           className="select-image"
         >
-          {uploadedImage ? uploadedImage.name : `Select File`}
+          {uploadedImage ? uploadedImage.name : "Select File"}
           <input
             type="file"
             name="file-input"
@@ -49,24 +92,30 @@ export default function Upload() {
 
         <textarea
           placeholder="Enter the link"
+          value={link}
+          onChange={handleLinkChange}
           style={{
             width: "100%",
             padding: "0.5rem",
             border: "1px solid #ccc",
             borderRadius: "5px",
             minHeight: "100px",
-            textAlign: "center", // Center the text within the textarea
-            fontWeight: "bold", // Make placeholder bold (affects typed text too)
-            color: "black", // Make placeholder and typed text black
-            // These next two lines are for better placeholder centering (cross-browser)
+            textAlign: "center",
+            fontWeight: "bold",
+            color: "black",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         />
 
-        <button className="select-image" style={{ marginTop: "1rem" }}>
-          Submit
+        <button
+          className="select-image"
+          style={{ marginTop: "1rem" }}
+          onClick={handleSubmit}
+          disabled={loading}
+        >
+          {loading ? "Processing..." : "Submit"}
         </button>
         <div
           className="position-absolute"
@@ -77,8 +126,6 @@ export default function Upload() {
             height: "300px",
           }}
         >
-          {" "}
-          {/* Adjust position, size, and padding as needed */}
           <img
             src="https://i.imghippo.com/files/ALR7050iTM.png"
             alt="Illustration"
