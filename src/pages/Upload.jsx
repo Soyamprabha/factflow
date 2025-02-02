@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Back from "../components/Back";
 
-const BASE_URL = process.env.BASE_URL;
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export default function Upload() {
   const [uploadedImage, setUploadedImage] = useState(null);
