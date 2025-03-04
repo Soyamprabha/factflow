@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import multer from "multer";
-import { getImageData, getInformation, getLinkData, processInformation, searchAPI } from "./main.js";
+import { factcheckAPI, getImageData, getInformation, getLinkData, processInformation, searchAPI } from "./utils.js"
 
 config();
 
@@ -27,7 +27,8 @@ app.post("/image", upload.single("image"), async (req, res) => {
         const responseData = await getImageData(base64Image);
         console.log(responseData)
         const searchResults = await searchAPI(responseData.keywords)
-        const data = await getInformation(responseData, searchResults)
+        const factResults = await factcheckAPI(responseData.search_string)
+        const data = await getInformation(responseData, searchResults, factResults)
         const verdict = await processInformation(data)
         console.log(verdict)
         res.json(verdict);
@@ -46,7 +47,8 @@ app.post("/link", async (req, res) => {
         const responseData = await getLinkData(link);
         console.log(responseData)
         const searchResults = await searchAPI(responseData.keywords)
-        const data = await getInformation(responseData, searchResults)
+        const factResults = await factcheckAPI(responseData.search_string)
+        const data = await getInformation(responseData, searchResults, factResults)
         const verdict = await processInformation(data)
         console.log(verdict)
         res.json(verdict);

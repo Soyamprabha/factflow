@@ -5,6 +5,7 @@ import Back from "../components/Back";
 export default function Display() {
   const location = useLocation();
   const result = location.state?.result;
+  // console.log(result)
 
   if (!result) {
     return (
