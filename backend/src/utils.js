@@ -100,7 +100,8 @@ export async function fetchContentFromURL(url) {
         // console.log(markdown)
         return markdown;
     } catch (error) {
-        throw new Error(`Failed to fetch content from URL: ${error}`);
+        // throw new Error(`Failed to fetch content from URL: ${error}`);
+        return "< text unavailable - unable to fetch content >"
     }
 }
 
