@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Back from "../components/Back";
+import illustration from "../images/illustration.png";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -11,8 +12,8 @@ export default function Upload() {
   const [imgSrc, setImgSrc] = useState(null);
   const [link, setLink] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -35,19 +36,17 @@ export default function Upload() {
         formData.append("image", uploadedImage);
 
         response = await axios.post(`${BASE_URL}/image`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          headers: { "Content-Type": "multipart/form-data" },
         });
       } else if (link.trim() !== "") {
         response = await axios.post(`${BASE_URL}/link`, { link });
       } else {
-        alert("Please select an image or enter a link.");
+        alert("Please select an image or enter a link or text.");
         return;
       }
       console.log("Submission response:", response.data);
       if (response.data) {
-        navigate("/display", { state: { result: response.data } }); // Navigate to Display with data
+        navigate("/display", { state: { result: response.data } });
       }
     } catch (error) {
       console.error("Error during submission:", error);
@@ -58,42 +57,45 @@ export default function Upload() {
   };
 
   return (
-    <div className="body">
+    <div className="upload-body">
       <Back />
-      <div className="container1 d-flex justify-content-center flex-column align-items-center">
-        <div className="img-area1" data-img="">
-          {uploadedImage ? (
-            <img src={imgSrc} style={{ position: "absolute" }} alt="Uploaded" />
-          ) : (
-            <div>
-              <h3>Upload Image</h3>
-            </div>
-          )}
-        </div>
-
-        <label
-          htmlFor="file-input"
-          style={{ cursor: "pointer" }}
-          className="select-image"
+      <div className="upload-container">
+        <div
+          className="upload-box"
+          onClick={() => document.getElementById("file-input").click()}
+          style={{
+            minHeight: uploadedImage ? "auto" : "150px",
+          }}
         >
-          {uploadedImage ? uploadedImage.name : "Select File"}
+          {uploadedImage ? (
+            <img src={imgSrc} alt="Uploaded" className="preview-image" />
+          ) : (
+            <p>Upload Image</p>
+          )}
           <input
             type="file"
-            name="file-input"
             id="file-input"
             onChange={handleImageChange}
             style={{ display: "none" }}
           />
-        </label>
-
-        <div style={{ margin: "1rem 0", textAlign: "center", color: "white" }}>
-          OR
         </div>
 
-        <textarea
+        <p className="text-center text-muted">OR</p>
+
+        <input
+          type="text"
+          className="form-control url-input"
           placeholder="Enter the link"
           value={link}
           onChange={handleLinkChange}
+        />
+
+        <p className="text-center text-muted">OR</p>
+
+        <input
+          type="text"
+          className="form-control url-input"
+          placeholder="Enter text"
           style={{
             width: "100%",
             padding: "0.5rem",
@@ -110,28 +112,19 @@ export default function Upload() {
         />
 
         <button
-          className="select-image"
-          style={{ marginTop: "1rem" }}
+          className="submit-btn"
           onClick={handleSubmit}
           disabled={loading}
         >
           {loading ? "Processing..." : "Submit"}
         </button>
-        <div
-          className="position-absolute"
-          style={{
-            left: "50px",
-            bottom: "50px",
-            width: "400px",
-            height: "300px",
-          }}
-        >
-          <img
-            src="https://i.imghippo.com/files/ALR7050iTM.png"
-            alt="Illustration"
-            style={{ maxWidth: "100%", height: "auto" }}
-          />
-        </div>
+      </div>
+      <div className="illustration-container">
+        <img
+          src={illustration}
+          alt="Illustration"
+          className="illustration-image"
+        />
       </div>
     </div>
   );
