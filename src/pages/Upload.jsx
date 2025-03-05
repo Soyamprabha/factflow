@@ -11,6 +11,7 @@ export default function Upload() {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [imgSrc, setImgSrc] = useState(null);
   const [link, setLink] = useState("");
+  const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,6 +25,10 @@ export default function Upload() {
 
   const handleLinkChange = (event) => {
     setLink(event.target.value);
+  };
+
+  const handleTextChange = (event) => {
+    setText(event.target.value);
   };
 
   const handleSubmit = async (event) => {
@@ -40,6 +45,8 @@ export default function Upload() {
         });
       } else if (link.trim() !== "") {
         response = await axios.post(`${BASE_URL}/link`, { link });
+      } else if (text.trim() !== "") {
+        response = await axios.post(`${BASE_URL}/text`, { text });
       } else {
         alert("Please select an image or enter a link or text.");
         return;
@@ -95,6 +102,8 @@ export default function Upload() {
         <input
           type="text"
           className="form-control url-input"
+          value={text}
+          onChange={handleTextChange}
           placeholder="Enter text"
           style={{
             width: "100%",

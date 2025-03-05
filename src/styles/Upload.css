@@ -157,5 +157,17 @@
   }
   
 }
+.evidence-title {
+  font-weight: bold;
+  font-size: 1rem;
+}
 
+.evidence-meta {
+  font-size: 0.85rem;
+  color: gray;
+}
 
+.evidence-summary {
+  font-size: 1rem;
+  margin-top: 5px;
+}
