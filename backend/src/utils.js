@@ -4,7 +4,7 @@ import { JSDOM, VirtualConsole } from "jsdom";
 import { Readability } from "@mozilla/readability";
 import { NodeHtmlMarkdown } from "node-html-markdown";
 import { config } from "dotenv";
-import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -94,7 +94,7 @@ export async function fetchContentFromURL(url) {
 
         const reader = new Readability(doc.window.document);
         const article = reader.parse();
-        const contentMarkdown = NodeHtmlMarkdown.translate(article.content?article.content:"");
+        const contentMarkdown = NodeHtmlMarkdown.translate(article.content ? article.content : "");
         let regex = /\[([^\]]+)]\(([^)]+)\)/g;
         const markdown = contentMarkdown.replace(regex, "$1");
         // console.log(markdown)
@@ -237,7 +237,7 @@ export async function searchAPI(keywords) {
     let results = []
     for (let i = 0; i < res.length; i++) {
         const summary = await fetchContentFromURL(res[i].url)
-        const temp = { title: res[i].title, url: res[i].url, summary: summarizerAPI(res[i].title, summary) }
+        const temp = { title: res[i].title, url: res[i].url, summary: await summarizerAPI(res[i].title, summary), source: res[i].source, date: res[i].lastUpdated }
         results.push(temp)
     }
     return results
@@ -262,6 +262,16 @@ export async function getLinkData(link) {
     return JSON.parse(result);
 }
 
+export async function getTextData(data) {
+    let result;
+    try {
+        result = await summarizerAPI(data, data)
+    } catch (error) {
+        console.error("Error in getLinkData:", error);
+        throw error;
+    }
+    return JSON.parse(result);
+}
 
 export function getInformation(news, search, claims) {
     const res = {
@@ -274,23 +284,27 @@ export function getInformation(news, search, claims) {
 
 export async function processInformation(news) {
     const schema = {
-        type: "object",
-        properties: {
-            response: { type: "boolean" },
-            evidence_titles: {
-                type: "array",
-                items: {
-                    type: "string",
-                }
+        "type": "object",
+        "properties": {
+            "response": {
+                "type": "boolean"
             },
-            evidence_links: {
-                type: "array",
-                items: {
-                    type: "string",
+            "evidence": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "title": { "type": "string" },
+                        "link": { "type": "string", },
+                        "summary": { "type": "string" },
+                        "date": { "type": "string", "format": "date-time" },
+                        "source": { "type": "string" }
+                    },
+                    "required": ["title", "link", "summary", "date", "source"]
                 }
             }
         },
-        required: ["response", "evidence_titles", "evidence_links"]
+        "required": ["response", "evidence"]
     }
     if (verifyGeminiApiKey) {
         const model = genAI.getGenerativeModel({
@@ -312,10 +326,23 @@ export async function processInformation(news) {
                 {
                     'role': 'user',
                     parts: [{
-                        'text': `Please help me determine if the news is fake or real. The news is given as "news", the array "search" is given as a list of evidence from google search results, the array "claims" is given as a list of evidence from claims from various more trusted sources. Act as a professional fact checker and use your own discretion searching from the search and claims arrays for results. Now, if it is fake, give response as false and array evidence pointing against it, and if true, give response true, with evidence pointing towards it in order of titles and links. Try to have multiple evidences if possible.  Return in JSON format`,
+                        'text': `Please help me determine if the news is fake or real. The news is given as "news", the array "search" is given as a list of evidence from google search results, the array "claims" is given as a list of evidence from claims from various more trusted sources.`,
                     }]
                 },
+                {
+                    'role': 'user',
+                    parts: [{
+                        'text': `Act as a professional fact checker and use your own discretion searching from the search and claims arrays for results. The claims should hold more value than the search results as it comes from trusted sources. Now, if it is fake, give response as false and array evidence pointing against it, and if true, give response true, with evidence pointing towards it in order of titles and links. Try to have multiple evidences if possible.  Return in JSON format`,
+                    }]
+                },
+                {
+                    'role': 'user',
+                    parts: [{
+                        'text': `Do not hallucinate, the results should be precise and accurate. Understand the evidence properly and think before deciding. Fake/False/Untrue news shouldnt be classified as True. Return in proper JSON format`,
+                    }]
+                }
             ]
+
         });
         console.log(result.response.text());
         return JSON.parse(result.response.text())
@@ -328,8 +355,16 @@ export async function processInformation(news) {
                 content: `The following data is to be used to answer the following- ${JSON.stringify(news)}`,
             },
             {
+                role: "user",
+                content: `Please help me determine if the news is fake or real. The news is given as "news", the array "search" is given as a list of evidence from google search results, the array "claims" is given as a list of evidence from claims from various more trusted sources.`,
+            },
+            {
                 'role': 'user',
-                'content': `Please help me determine if the news is fake or real. The news is given as "news", the array "search" is given as a list of evidence from google search results, the array "claims" is given as a list of evidence from claims from various more trusted sources. Act as a professional fact checker and use your own discretion searching from the search and claims arrays for results. Now, if it is fake, give response as false and array evidence pointing against it, and if true, give response true, with evidence pointing towards it in order of titles and links. Try to have multiple evidences if possible. Return in JSON format`,
+                'content': `Act as a professional fact checker and use your own discretion searching from the search and claims arrays for results. The claims should hold more value than the search results as it comes from trusted sources. Now, if it is fake, give response as false and array evidence pointing against it, and if true, give response true, with evidence pointing towards it in order of titles and links. Try to have multiple evidences if possible.  Return in JSON format`,
+            },
+            {
+                'role': 'user',
+                'content': `Do not hallucinate, the results should be precise and accurate. Understand the evidence properly and think before deciding. Fake/False/Untrue news shouldnt be classified as True. Return in proper JSON format`,
             },
         ],
         stream: false,

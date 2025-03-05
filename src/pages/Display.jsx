@@ -26,15 +26,22 @@ export default function Display() {
       <div className="holder">
         <h3>Supporting Evidence:</h3>
         <ul>
-          {result.evidence_titles.map((title, index) => (
+          {result.evidence.map((item, index) => (
             <li key={index}>
               <a
-                href={result.evidence_links[index]}
+                href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="evidence-title"
               >
-                {title}
+                {item.title}
               </a>
+              <br />
+              <em className="evidence-meta">
+                by {item.source}, dated{" "}
+                {new Date(item.date).toLocaleDateString()}
+              </em>
+              <p className="evidence-summary">{item.summary}</p>
             </li>
           ))}
         </ul>

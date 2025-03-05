@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { config } from "dotenv";
 import multer from "multer";
-import { factcheckAPI, getImageData, getInformation, getLinkData, processInformation, searchAPI } from "./utils.js"
+import { factcheckAPI, getImageData, getInformation, getLinkData, processInformation, searchAPI, getTextData } from "./utils.js"
 
 config();
 
@@ -45,6 +45,26 @@ app.post("/link", async (req, res) => {
             return res.status(400).json({ error: "No link provided" });
         }
         const responseData = await getLinkData(link);
+        console.log(responseData)
+        const searchResults = await searchAPI(responseData.keywords)
+        const factResults = await factcheckAPI(responseData.search_string)
+        const data = await getInformation(responseData, searchResults, factResults)
+        const verdict = await processInformation(data)
+        console.log(verdict)
+        res.json(verdict);
+    } catch (error) {
+        console.error("Error in /link route:", error);
+        res.status(500).json({ error: "Error processing link" });
+    }
+});
+
+app.post("/text", async (req, res) => {
+    try {
+        const { text } = req.body;
+        if (!text) {
+            return res.status(400).json({ error: "No text provided" });
+        }
+        const responseData = await getTextData(text);
         console.log(responseData)
         const searchResults = await searchAPI(responseData.keywords)
         const factResults = await factcheckAPI(responseData.search_string)
