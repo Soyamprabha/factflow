@@ -244,7 +244,7 @@ export async function searchAPI(keywords) {
 }
 
 export async function getImageData(img) {
-    const msg = "Analyze this image and describe what you see, detect the text accurately and whatever you see. Text should be detailed. If there is no text in the image, describe the image. Now from the detected text and context from the image, get a detailed search string to search for the exact information and validate its credibility. The search string is always mandatory.Return them all in JSON format.";
+    const msg = "Analyze this image and describe what you see, detect the text accurately and whatever you see. Text should be detailed and long. If there is no text in the image, describe the image. Now from the detected text and context from the image, get a detailed search string to search for the exact information and validate its credibility. The search string is always mandatory.Return them all in JSON format.";
     const res = await visonAPI(msg, img)
     return JSON.parse(res)
 }
@@ -344,8 +344,10 @@ export async function processInformation(news) {
             ]
 
         });
-        console.log(result.response.text());
-        return JSON.parse(result.response.text())
+        let val = JSON.parse(result.response.text())
+        val['summary'] = news.news.text;
+        console.log(val)
+        return val;
     }
     const data = {
         model: "deepseek-r1:8b",
@@ -377,6 +379,8 @@ export async function processInformation(news) {
             'Content-Type': 'application/json'
         }
     })
-    console.log(response.data)
-    return JSON.parse(response.data.message.content)
+    let val = JSON.parse(response.data.message.content)
+    val['summary'] = news.news.text;
+    console.log(val)
+    return val;
 };
