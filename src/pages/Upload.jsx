@@ -1,9 +1,7 @@
 import "../styles/Upload.css";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Back from "../components/Back";
-import illustration from "../images/illustration.png";
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -13,7 +11,7 @@ export default function Upload() {
   const [link, setLink] = useState("");
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [result, setResult] = useState(null);
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -34,12 +32,12 @@ export default function Upload() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setResult(null);
     try {
       let response;
       if (uploadedImage) {
         const formData = new FormData();
         formData.append("image", uploadedImage);
-
         response = await axios.post(`${BASE_URL}/image`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
@@ -51,10 +49,7 @@ export default function Upload() {
         alert("Please select an image or enter a link or text.");
         return;
       }
-      console.log("Submission response:", response.data);
-      if (response.data) {
-        navigate("/display", { state: { result: response.data } });
-      }
+      setResult(response.data);
     } catch (error) {
       console.error("Error during submission:", error);
       alert("There was an error submitting your data.");
@@ -64,76 +59,109 @@ export default function Upload() {
   };
 
   return (
-    <div className="upload-body">
-      <Back />
-      <div className="upload-container">
-        <div
-          className="upload-box"
-          onClick={() => document.getElementById("file-input").click()}
-          style={{
-            minHeight: uploadedImage ? "auto" : "150px",
-          }}
-        >
-          {uploadedImage ? (
-            <img src={imgSrc} alt="Uploaded" className="preview-image" />
-          ) : (
-            <p>Upload Image</p>
-          )}
+    <div className="upload-page">
+      <div className="upload-section">
+        <Back />
+        <div className="upload-container">
+          <h3>Upload File</h3>
+          <p>Drag and drop your file here or click to upload</p>
+          <div
+            className="upload-box"
+            onClick={() => document.getElementById("file-input").click()}
+          >
+            {uploadedImage ? (
+              <img src={imgSrc} alt="Uploaded" className="preview-image" />
+            ) : (
+              <p>Upload Image</p>
+            )}
+            <input
+              type="file"
+              id="file-input"
+              onChange={handleImageChange}
+              style={{ display: "none" }}
+            />
+          </div>
           <input
-            type="file"
-            id="file-input"
-            onChange={handleImageChange}
-            style={{ display: "none" }}
+            type="text"
+            className="form-control url-input"
+            placeholder="Enter the link"
+            value={link}
+            onChange={handleLinkChange}
           />
+          <input
+            type="text"
+            className="form-control url-input"
+            value={text}
+            onChange={handleTextChange}
+            placeholder="Enter text"
+          />
+          <button
+            className="submit-btn"
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Submit"}
+          </button>
         </div>
-
-        <p className="text-center text-muted">OR</p>
-
-        <input
-          type="text"
-          className="form-control url-input"
-          placeholder="Enter the link"
-          value={link}
-          onChange={handleLinkChange}
-        />
-
-        <p className="text-center text-muted">OR</p>
-
-        <input
-          type="text"
-          className="form-control url-input"
-          value={text}
-          onChange={handleTextChange}
-          placeholder="Enter text"
-          style={{
-            width: "100%",
-            padding: "0.5rem",
-            border: "1px solid #ccc",
-            borderRadius: "5px",
-            minHeight: "100px",
-            textAlign: "center",
-            fontWeight: "bold",
-            color: "black",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        />
-
-        <button
-          className="submit-btn"
-          onClick={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? "Processing..." : "Submit"}
-        </button>
       </div>
-      <div className="illustration-container">
-        <img
-          src={illustration}
-          alt="Illustration"
-          className="illustration-image"
-        />
+      <div className="result-section">
+        {loading ? (
+          <div className="loading-container">
+            <div className="loader"></div>
+            <h2 className="loading-text">Please wait...</h2>
+          </div>
+        ) : result ? (
+          <>
+            <h2 className={`result-header ${result.isFake ? "false" : "true"}`}>
+              {result.isFake ? "This news is false" : "This news is true"}
+            </h2>
+            <p className="result-text">{result.summary}</p>
+            {result.evidence && (
+              <div className="evidence">
+                <h3>Supporting Evidence:</h3>
+                {result.evidence.map((item, index) => (
+                  <div key={index} className="evidence-box">
+                    <a
+                      href={item.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="evidence-title"
+                    >
+                      {item.title}
+                    </a>
+                    <br />
+                    <em className="evidence-meta">
+                      by {item.source}, dated{" "}
+                      {new Date(item.date).toLocaleDateString()}
+                    </em>
+                    <p className="evidence-summary">{item.summary}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="stats-container">
+            <img
+              src={
+                "https://seedworld.com/cdn/wp-content/uploads/20240118230854/Fake-News-Canva-Made-by-SWG.png"
+              }
+              alt="Fake News Statistics"
+              className="stats-image"
+            />
+
+            <p className="stats-summary">
+              Fake news is a growing global concern, spreading rapidly through
+              social media and other digital platforms. Studies reveal that 60%
+              of people worldwide believe news organizations regularly report
+              false stories. In some countries, such as Argentina, 82% of
+              citizens frequently encounter deliberately false news.
+              Additionally, there has been a 3x increase in video deepfakes and
+              an 8x rise in voice deepfakes from 2022 to 2023, further
+              complicating the fight against misinformation.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
