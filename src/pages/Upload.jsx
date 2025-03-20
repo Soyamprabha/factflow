@@ -12,6 +12,7 @@ export default function Upload() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+  const [showResult, setShowResult] = useState(false); // State to control result section visibility
 
   const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -33,6 +34,7 @@ export default function Upload() {
     event.preventDefault();
     setLoading(true);
     setResult(null);
+
     try {
       let response;
       if (uploadedImage) {
@@ -50,6 +52,7 @@ export default function Upload() {
         return;
       }
       setResult(response.data);
+      setShowResult(true); // Show result section on submit
     } catch (error) {
       console.error("Error during submission:", error);
       alert("There was an error submitting your data.");
@@ -59,7 +62,7 @@ export default function Upload() {
   };
 
   return (
-    <div className="upload-page">
+    <div className={`upload-page ${showResult ? "expanded" : "centered"}`}>
       <div className="upload-section">
         <Back />
         <div className="upload-container">
@@ -100,15 +103,23 @@ export default function Upload() {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Submit"}
+            {loading ? (
+              <>
+                Processing...
+                <span className="small-loader"></span>{" "}
+                {/* Loader next to text */}
+              </>
+            ) : (
+              "Submit"
+            )}
           </button>
         </div>
       </div>
-      <div className="result-section">
+      <div className={`result-section ${showResult ? "slide-in" : "hidden"}`}>
         {loading ? (
           <div className="loading-container">
-            <div className="loader"></div>
             <h2 className="loading-text">Please wait...</h2>
+            <div className="loader"></div>
           </div>
         ) : result ? (
           <>
@@ -116,6 +127,7 @@ export default function Upload() {
               {result.isFake ? "This news is false" : "This news is true"}
             </h2>
             <p className="result-text">{result.summary}</p>
+
             {result.evidence && (
               <div className="evidence">
                 <h3>Supporting Evidence:</h3>
@@ -140,28 +152,7 @@ export default function Upload() {
               </div>
             )}
           </>
-        ) : (
-          <div className="stats-container">
-            <img
-              src={
-                "https://seedworld.com/cdn/wp-content/uploads/20240118230854/Fake-News-Canva-Made-by-SWG.png"
-              }
-              alt="Fake News Statistics"
-              className="stats-image"
-            />
-
-            <p className="stats-summary">
-              Fake news is a growing global concern, spreading rapidly through
-              social media and other digital platforms. Studies reveal that 60%
-              of people worldwide believe news organizations regularly report
-              false stories. In some countries, such as Argentina, 82% of
-              citizens frequently encounter deliberately false news.
-              Additionally, there has been a 3x increase in video deepfakes and
-              an 8x rise in voice deepfakes from 2022 to 2023, further
-              complicating the fight against misinformation.
-            </p>
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

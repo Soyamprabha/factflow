@@ -97,9 +97,9 @@ html {
   }
   .start-video h2 {
     position: absolute;
-    top: 50px;
+    top: 10px;
     left: 20px;
-    font-size: 45px;
+    font-size: 40px;
     font-weight: bold;
     color: white; 
     z-index: 3; 
@@ -300,26 +300,6 @@ html {
     font-size: 1rem;
     color: #555;
   }
-/* Breaking News Ticker */
-.news-ticker {
-  background-color: #ff3333;
-  color: white;
-  padding: 10px 0;
-  font-weight: bold;
-  font-size: 1rem;
-  text-align: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 1000;
-}
-
-.ticker-text {
-  display: inline-block;
-  white-space: nowrap;
-  width: 100%;
-}
 
 .heatmap-section {
   background-color: #f8f9fa;
@@ -367,7 +347,7 @@ html {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 3 per row */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
   gap: 20px;
   max-width: 1100px;
   margin: 0 auto;
@@ -375,13 +355,13 @@ html {
 
 @media (max-width: 1024px) {
   .stats-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 per row for tablets */
+    grid-template-columns: repeat(2, 1fr); 
   }
 }
 
 @media (max-width: 768px) {
   .stats-grid {
-    grid-template-columns: repeat(1, 1fr); /* 1 per row for mobile */
+    grid-template-columns: repeat(1, 1fr); 
   }
 }
 

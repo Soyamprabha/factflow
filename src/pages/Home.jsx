@@ -1,129 +1,9 @@
-// import "../styles/Home.css";
-
-// import ContactUs from "../components/Contactus";
-// import Hero from "../components/Hero";
-// import Content from "../components/Content";
-
-// const Home = () => {
-//   return (
-//     <div className="container-fluid">
-//       <Hero />
-//       <Content />
-//       <ContactUs />
-//     </div>
-//   );
-// };
-
-// export default Home;
-
-// import "../styles/Home.css";
-// import ContactUs from "../components/Contactus";
-// import Hero from "../components/Hero";
-// import Content from "../components/Content";
-// import { useState, useEffect } from "react";
-
-// const statistics = [
-//   {
-//     id: 1,
-//     value: 66,
-//     text: "of U.S. consumers believe that 76% or more of the news on social media is biased.",
-//   },
-//   {
-//     id: 2,
-//     value: 60,
-//     text: "globally say news organizations regularly report false stories.",
-//   },
-//   {
-//     id: 3,
-//     value: 82,
-//     text: "of Argentinians reported seeing deliberately false stories often, compared to lower percentages in Germany, Japan, and South Korea.",
-//   },
-//   {
-//     id: 4,
-//     value: 60,
-//     text: "of U.S. journalists express high concern about possible press freedom limitations.",
-//   },
-//   {
-//     id: 5,
-//     value: 94,
-//     text: "of journalists see made-up news as a significant problem.",
-//   },
-//   {
-//     id: 6,
-//     value: 38.2,
-//     text: "of U.S. news consumers unknowingly shared fake news on social media.",
-//   },
-//   {
-//     id: 7,
-//     value: 16,
-//     text: "of overall respondents found news content on Twitter accurate, with stark contrasts based on political alignment.",
-//   },
-//   {
-//     id: 8,
-//     value: 66,
-//     text: "of bots discussing COVID-19 were spreading misinformation and 47% of U.S. adults encountered a significant amount of made-up news about COVID-19.",
-//   },
-// ];
-
-// const StatisticsSection = () => {
-//   const [counts, setCounts] = useState(statistics.map(() => 0));
-
-//   useEffect(() => {
-//     const intervals = statistics.map((stat, index) => {
-//       return setInterval(() => {
-//         setCounts((prevCounts) => {
-//           const newCounts = [...prevCounts];
-//           if (newCounts[index] < stat.value) {
-//             newCounts[index] += Math.ceil(stat.value / 50); // Smooth increment
-//           } else {
-//             newCounts[index] = stat.value;
-//           }
-//           return newCounts;
-//         });
-//       }, 30);
-//     });
-//     setTimeout(() => intervals.forEach(clearInterval), 2000);
-//     return () => intervals.forEach(clearInterval);
-//   }, []);
-
-//   return (
-//     <section className="statistics-section">
-//       <div className="container">
-//         <h2 className="section-title">Facts vs. Fiction: The Data Speaks</h2>
-//         <div className="stats-grid">
-//           {statistics.map((stat, index) => (
-//             <div key={stat.id} className="stat-box">
-//               <h3>
-//                 {counts[index]}
-//                 {stat.id === 10 ? "x" : "%"}{" "}
-//               </h3>
-//               <p>{stat.text}</p>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </section>
-//   );
-// };
-
-// const Home = () => {
-//   return (
-//     <div className="container-fluid">
-//       <Hero />
-//       <StatisticsSection />
-//       <Content />
-//       <ContactUs />
-//     </div>
-//   );
-// };
-
-// export default Home;
 import "../styles/Home.css";
 import ContactUs from "../components/Contactus";
 import Hero from "../components/Hero";
 import Content from "../components/Content";
 import { useState, useEffect } from "react";
-import { Chart } from "react-google-charts"; // Google Charts Import
+import { Chart } from "react-google-charts";
 import "chart.js/auto";
 
 const statistics = [
@@ -207,18 +87,6 @@ const StatisticsSection = () => {
         </div>
       </div>
     </section>
-  );
-};
-
-const NewsTicker = () => {
-  return (
-    <div className="news-ticker">
-      <marquee className="ticker-text">
-        🔥 Latest: AI-generated deepfakes increase 8x in one year! | 🚨 Fake
-        news spreads 3x faster than real news! | 📰 60% of people struggle to
-        differentiate real from fake news.
-      </marquee>
-    </div>
   );
 };
 
@@ -353,7 +221,6 @@ const HeatmapSection = () => {
 const Home = () => {
   return (
     <div className="container-fluid">
-      <NewsTicker />
       <Hero />
       <StatisticsSection />
       <HeatmapSection />
