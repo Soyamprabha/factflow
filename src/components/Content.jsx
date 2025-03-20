@@ -1,50 +1,75 @@
 import "../styles/Home.css";
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { TagCloud } from "react-tagcloud";
+
 export default function Content() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = document.getElementById("about");
+      if (section) {
+        const top = section.getBoundingClientRect().top;
+        if (top < window.innerHeight * 0.75) {
+          setIsVisible(true);
+        }
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const tagData = [
+    { value: "Fact-Checking", count: 25 },
+    { value: "AI-Powered", count: 18 },
+    { value: "Misinformation", count: 30 },
+    { value: "Verification", count: 22 },
+    { value: "Deep Learning", count: 20 },
+    { value: "Fake News", count: 28 },
+  ];
+
   return (
-    <div>
-      <section id="about" className="about section-padding">
-        <div className="container-fluid">
-          <div className="row align-items-center">
-            <div className="col-lg-6 col-md-12 col-12">
-              <div className="about-img">
-                <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZrfbPzAb_sJs7kSJKPdH85ys5YhikFRzghw&s"
-                  alt=""
-                  className="img-fluid rounded"
-                  style={{ width: "100%", height: "auto" }}
-                />
-              </div>
-            </div>
-            <div className="col-lg-6 col-md-12 col-12 ps-lg-5 mt-md-5">
-              <div className="about-text">
-                <h2 style={{ color: "#3E7C17" }}>What do we do?</h2>
-                <p>
-                  Our project tackles the pervasive issue of online
-                  misinformation by providing an automated, real-time detection
-                  and verification system. Leveraging cutting-edge AI, we
-                  analyze text to identify potentially false content,
-                  significantly reducing the manual effort required for
-                  fact-checking. We empower users to critically assess online
-                  information by flagging questionable content and offering
-                  reliable sources for comparison. This fosters a more informed
-                  online experience, enhancing trust in credible content and
-                  reducing the spread of harmful misinformation.
-                </p>
-                <p>
-                  Our solution prioritizes speed and accuracy, processing posts
-                  rapidly to provide users with timely results. We aim to
-                  improve detection accuracy, minimize response time, and
-                  maximize user engagement to effectively combat the spread of
-                  misinformation and promote a more trustworthy digital
-                  environment. Ultimately, our work strives to measurably reduce
-                  the circulation of false content and contribute to a more
-                  informed and discerning online community.
-                </p>
-              </div>
-            </div>
+    <section id="about" className="about section-padding">
+      <div className="container">
+        <motion.div
+          className="content-container"
+          initial={{ opacity: 0, y: 50 }}
+          animate={isVisible ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+        >
+          <div className="text-section">
+            <h2 className="section-title">What We Do</h2>
+            <p>
+              Our AI-powered platform detects misinformation in real-time,
+              reducing manual fact-checking efforts. We empower users to verify
+              content with trusted sources, helping to combat the spread of fake
+              news across social media.
+            </p>
+            <p>
+              With cutting-edge technology, we ensure high accuracy and minimal
+              response time. Our goal is to build a more informed digital
+              community through reliable and fast fact-checking.
+            </p>
           </div>
-        </div>
-      </section>
-    </div>
+
+          <div className="visual-section">
+            <motion.img
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZrfbPzAb_sJs7kSJKPdH85ys5YhikFRzghw&s"
+              alt="Fact-Checking"
+              className="about-img"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            />
+            <TagCloud
+              minSize={12}
+              maxSize={35}
+              tags={tagData}
+              className="tag-cloud"
+            />
+          </div>
+        </motion.div>
+      </div>
+    </section>
   );
 }
